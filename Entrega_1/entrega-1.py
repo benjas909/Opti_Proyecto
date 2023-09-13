@@ -443,47 +443,45 @@ def main():
         INSTANCES_M.append(generate_m(i))
         INSTANCES_L.append(generate_l(i))
 
-    while True:
+    for i in range(3):
+        if i == 0:
+            print("Instancias pequeñas:")
+            for j in range(5):
+                print(f"Instancia {j + 1}:")
+                k = 0
+                while (k < len(INSTANCES_S[j]["J"])): 
+                    if (k < len(INSTANCES_S[j]["I"])):
+                        print(f" I: {INSTANCES_S[j]['I'][k]}, J: {INSTANCES_S[j]['J'][k]}")
+                    else:
+                        print(f"                 J: {INSTANCES_S[j]['J'][k]}")    
+                    
+                    k += 1
 
-        for i in range(3):
-            if i == 0:
-                print("Instancias pequeñas:")
-                for j in range(5):
-                    print(f"Instancia {j + 1}:")
-                    k = 0
-                    while (k < len(INSTANCES_S[j]["J"])): 
-                        if (k < len(INSTANCES_S[j]["I"])):
-                            print(f" I: {INSTANCES_S[j]['I'][k]}, J: {INSTANCES_S[j]['J'][k]}")
-                        else:
-                            print(f"                 J: {INSTANCES_S[j]['J'][k]}")    
-                        
-                        k += 1
-
-            elif i == 1:
-                print("Instancias medianas:")
-                for j in range(5):
-                    print(f"Instancia {j + 1}:")
-                    k = 0
-                    while (k < len(INSTANCES_M[j]["J"])): 
-                        if (k < len(INSTANCES_M[j]["I"])):
-                            print(f" I: {INSTANCES_M[j]['I'][k]}, J: {INSTANCES_M[j]['J'][k]}")
-                        else:
-                            print(f"                 J: {INSTANCES_M[j]['J'][k]}")    
-                        
-                        k += 1
-                
-            elif i == 2:
-                print("Instancias grandes:")
-                for j in range(5):
-                    print(f"Instancia {j + 1}:")
-                    k = 0
-                    while (k < len(INSTANCES_L[j]["J"])): 
-                        if (k < len(INSTANCES_L[j]["I"])):
-                            print(f" I: {INSTANCES_L[j]['I'][k]}, J: {INSTANCES_L[j]['J'][k]}")
-                        else:
-                            print(f"                 J: {INSTANCES_L[j]['J'][k]}")   
-                        
-                        k += 1
+        elif i == 1:
+            print("Instancias medianas:")
+            for j in range(5):
+                print(f"Instancia {j + 1}:")
+                k = 0
+                while (k < len(INSTANCES_M[j]["J"])): 
+                    if (k < len(INSTANCES_M[j]["I"])):
+                        print(f" I: {INSTANCES_M[j]['I'][k]}, J: {INSTANCES_M[j]['J'][k]}")
+                    else:
+                        print(f"                 J: {INSTANCES_M[j]['J'][k]}")    
+                    
+                    k += 1
+            
+        elif i == 2:
+            print("Instancias grandes:")
+            for j in range(5):
+                print(f"Instancia {j + 1}:")
+                k = 0
+                while (k < len(INSTANCES_L[j]["J"])): 
+                    if (k < len(INSTANCES_L[j]["I"])):
+                        print(f" I: {INSTANCES_L[j]['I'][k]}, J: {INSTANCES_L[j]['J'][k]}")
+                    else:
+                        print(f"                 J: {INSTANCES_L[j]['J'][k]}")   
+                    
+                    k += 1
 
     return 0
 
