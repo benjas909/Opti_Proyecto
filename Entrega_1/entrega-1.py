@@ -442,8 +442,73 @@ def main():
         INSTANCES_S.append(generate_s(i))
         INSTANCES_M.append(generate_m(i))
         INSTANCES_L.append(generate_l(i))
+    
+    print("            1          |          2          |           3           |")
+    print("   |     Pequeñas      |      Medianas       |        Grandes        |")
+    print("   |    I    |    J    |    I    |     J     |     I     |     J     |")
+    print(" 1 |  5 - 7  |  6 - 10 | 32 - 38 |  50 - 65  |  72 - 81  | 125 - 145 |")
+    print(" 2 |  8 - 12 | 10 - 20 | 39 - 45 |  65 - 80  |  82 - 91  | 145 - 165 |")
+    print(" 3 | 13 - 18 | 20 - 30 | 46 - 53 |  80 - 95  |  92 - 101 | 165 - 185 |")
+    print(" 4 | 19 - 23 | 30 - 40 | 54 - 65 |  95 - 110 | 102 - 111 | 185 - 205 |")
+    print(" 5 | 24 - 30 | 40 - 50 | 66 - 72 | 110 - 125 | 112 - 131 | 205 - 225 |")
 
-    for i in range(3):
+
+    while True:
+        size = int(input("Tamaño de instancia (1, 2, 3): "))
+        if size in [1, 2, 3]:
+            instNum = int(input("Número de instancia (1 - 5): "))
+            if instNum in range(1, 6):
+                match size:
+                    case 1:
+                        #print(f"Bodegas: {INSTANCES_S[instNum - 1]['I']}")
+                        k = 0
+                        print("Bodegas:")
+                        while (k < len(INSTANCES_S[instNum - 1]['I'])):
+                            print("\t", INSTANCES_S[instNum - 1]['I'][k])
+                            k += 1
+                        
+                        k = 0
+                        print("Tiendas: ")
+                        while(k < len(INSTANCES_S[instNum - 1]['J'])):
+                            print("\t", INSTANCES_S[instNum - 1]['J'][k])
+                            k += 1
+                        # print(f"Tiendas: {INSTANCES_S[instNum - 1]['J']}")
+                        break
+
+                    case 2:
+                        k = 0
+                        print("Bodegas:")
+                        while (k < len(INSTANCES_M[instNum - 1]['I'])):
+                            print("\t", INSTANCES_M[instNum - 1]['I'][k])
+                            k += 1
+
+                        k = 0
+                        print("Bodegas:")
+                        while (k < len(INSTANCES_M[instNum - 1]['J'])):
+                            print("\t", INSTANCES_M[instNum - 1]['J'][k])
+                            k += 1
+
+                        break
+
+                    case 3:
+                        k = 0
+                        print("Bodegas:")
+                        while (k < len(INSTANCES_L[instNum - 1]['I'])):
+                            print("\t", INSTANCES_L[instNum - 1]['I'][k])
+                            k += 1
+
+                        k = 0
+                        print("Bodegas:")
+                        while (k < len(INSTANCES_L[instNum - 1]['J'])):
+                            print("\t", INSTANCES_L[instNum - 1]['J'][k])
+                            k += 1
+                        break
+                                    
+            continue
+        continue
+
+
+    """ for i in range(3):
         if i == 0:
             print("Instancias pequeñas:")
             for j in range(5):
@@ -482,6 +547,8 @@ def main():
                         print(f"                 J: {INSTANCES_L[j]['J'][k]}")   
                     
                     k += 1
+    
+    print(INSTANCES_S) """
 
     return 0
 
