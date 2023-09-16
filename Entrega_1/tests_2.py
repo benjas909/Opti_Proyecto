@@ -1,11 +1,14 @@
 import random as r
 
-INSTANCES_S = []
-INSTANCES_M = []
-INSTANCES_L = []
-INSTANCES = [INSTANCES_S, INSTANCES_M, INSTANCES_L]
-ZONAS = ["Verde Oscuro", "Verde Claro", "Azul"]
-
+# INSTANCES_S = []
+# INSTANCES_M = []
+# INSTANCES_L = []
+INSTANCES = [[], [], []]
+ZONES = ["Verde Oscuro", "Verde Claro", "Azul"]
+RANGES = [
+    [(5, 7), (6, 10)], [(8, 12), (10, 20)], [(13, 18), (20, 30)], [(19, 23), (30, 40)], [(24, 30), (40, 50)],
+    [(32, 38), (50, 65)], [(39, 45), (65, 80)], [(46, 53), (80, 95)], [(54, 65), (95, 110)], [(66, 72), (110, 125)], 
+    [(72, 81), (125, 145)], [(82, 91), (145, 165)], [(92, 101), (165, 185)], [(102, 111), (185, 205)], [(112, 131), (205, 225)]]
 
 def generatePoint(zone):
     if zone == 0:
@@ -30,393 +33,58 @@ def generatePoint(zone):
     return point
 
 
-def createDistanceMatrix(Ilist, Jlist):
-    distances = []
-    for i in range(len(Ilist)):
-        distances.append([])
-        for j in range(len(Jlist)):
-            distances[i].append(distance(Ilist[i], Jlist[j]))
-    return distances
-
-
-def generateS(it):
-    """ Genera los puntos de bodegas y tiendas para las 5 instancias pequeñas """
-    I = []
-    J = []
-    distances = []
-    match it:
-        case 1:
-            
-            iQuant = r.randint(5, 7)
-            for _ in range(iQuant): # Elige un número aleatorio en el rango dado
-                while True:
-                    # Si el punto no está en la lista I, se agrega, en caso contrario, se siguen generando puntos
-                    point = generatePoint(r.choice([1, 2]))
-                    if point not in I:
-                        I.append(point)
-                        distances.append([])
-                        break
-                    continue
-            
-            jQuant = r.randint(6, 10)
-            for _ in range(jQuant):
-                while True:
-                    # Si el punto no está en la lista J, se agrega, en caso contrario, se siguen generando puntos
-                    point = generatePoint(0)
-                    if point not in J:
-                        J.append(point)
-                        break
-                    continue
-            distances = createDistanceMatrix(I, J)
-        
-        case 2:
-            
-            for _ in range(r.randint(8, 12)):
-                while True:
-                    # Si el punto no está en la lista I, se agrega, en caso contrario, se siguen generando puntos
-                    point = generatePoint(r.choice([1, 2]))
-                    if point not in I:
-                        I.append(point)
-                        distances.append([])
-                        break
-                    continue
-            
-            for _ in range(r.randint(10, 20)):
-                while True:
-                    # Si el punto no está en la lista J, se agrega, en caso contrario, se siguen generando puntos
-                    point = generatePoint(0)
-                    if point not in J:
-                        J.append(point)
-                        break
-                    continue
-            distances = createDistanceMatrix(I, J)
-        
-        case 3:
-        
-            for _ in range(r.randint(13, 18)):
-                while True:
-                    # Si el punto no está en la lista I, se agrega, en caso contrario, se siguen generando puntos 
-                    point = generatePoint(r.choice([1, 2]))
-                    if point not in I:
-                        I.append(point)
-                        distances.append([])
-                        break
-                    continue
-            
-            for _ in range(r.randint(20, 30)):
-                while True:
-                    # Si el punto no está en la lista I, se agrega, en caso contrario, se siguen generando puntos
-                    point = generatePoint(0)
-                    if point not in J:
-                        J.append(point)
-                        break
-                    continue
-            distances = createDistanceMatrix(I, J)
-
-        case 4:
-            
-            for _ in range(r.randint(19, 23)):
-                while True:
-                    # Si el punto no está en la lista I, se agrega, en caso contrario, se siguen generando puntos
-                    point = generatePoint(r.choice([1, 2]))
-                    if point not in I:
-                        I.append(point)
-                        distances.append([])
-                        break
-                    continue
-            
-            for _ in range(r.randint(30, 40)):
-                while True:
-                    # Si el punto no está en la lista J, se agrega, en caso contrario, se siguen generando puntos
-                    point = generatePoint(0)
-                    if point not in J:
-                        J.append(point)
-                        break
-                    continue
-            distances = createDistanceMatrix(I, J)
-        
-        case 5:
-            
-            for _ in range(r.randint(24, 30)):
-                while True:
-                    # Si el punto no está en la lista I, se agrega, en caso contrario, se siguen generando puntos
-                    point = generatePoint(r.choice([1, 2]))
-                    if point not in I:
-                        I.append(point)
-                        distances.append([])
-                        break
-                    continue
-            
-            for _ in range(r.randint(40, 50)):
-                while True:
-                    # Si el punto no está en la lista J, se agrega, en caso contrario, se siguen generando puntos
-                    point = generatePoint(0)
-                    if point not in J:
-                        J.append(point)
-                        break
-                    continue
-            distances = createDistanceMatrix(I, J)
-
-    instances = [I, J, distances]
-
-    return instances
-    
-
-def generateM(it):
-    """ Genera los puntos de bodegas y tiendas para las 5 instancias pequeñas """
-    I = []
-    J = []
-    distances = []
-    match it:
-        case 1:
-
-            for _ in range(r.randint(32, 38)):
-                while True:
-                        
-                    point = generatePoint(r.choice([1, 2]))
-                    if point not in I:
-                        I.append(point)
-                        distances.append([])
-                        break
-                    continue
-            
-            for _ in range(r.randint(50, 65)):
-                while True:
-
-                    point = generatePoint(0)
-                    if point not in J:
-                        J.append(point)
-                        break
-                    continue
-            distances = createDistanceMatrix(I, J)
-
-        
-        case 2:
-            
-            for _ in range(r.randint(39, 45)):
-                while True:
-                        
-                    point = generatePoint(r.choice([1, 2]))
-                    if point not in I:
-                        I.append(point)
-                        distances.append([])
-                        break
-                    continue
-            
-            for _ in range(r.randint(65, 80)):
-                while True:
-
-                    point = generatePoint(0)
-                    if point not in J:
-                        J.append(point)
-                        break
-                    continue
-            distances = createDistanceMatrix(I, J)
-        
-        case 3:
-        
-            for _ in range(r.randint(46, 53)):
-                while True:
-                        
-                    point = generatePoint(r.choice([1, 2]))
-                    if point not in I:
-                        I.append(point)
-                        distances.append([])
-                        break
-                    continue
-            
-            for _ in range(r.randint(80, 95)):
-                while True:
-
-                    point = generatePoint(0)
-                    if point not in J:
-                        J.append(point)
-                        break
-                    continue
-            distances = createDistanceMatrix(I, J)
-
-        case 4:
-
-            for _ in range(r.randint(54, 65)):
-                while True:
-                        
-                    point = generatePoint(r.choice([1, 2]))
-                    if point not in I:
-                        I.append(point)
-                        distances.append([])
-                        break
-                    continue
-            
-            for _ in range(r.randint(95, 110)):
-                while True:
-
-                    point = generatePoint(0)
-                    if point not in J:
-                        J.append(point)
-                        break
-                    continue
-            distances = createDistanceMatrix(I, J)
-        
-        case 5:
-
-            for _ in range(r.randint(66, 72)):
-                while True:
-                        
-                    point = generatePoint(r.choice([1, 2]))
-                    if point not in I:
-                        I.append(point)
-                        distances.append([])
-                        break
-                    continue
-            
-            for _ in range(r.randint(110, 125)):
-                while True:
-
-                    point = generatePoint(0)
-                    if point not in J:
-                        J.append(point)
-                        break
-                    continue
-            distances = createDistanceMatrix(I, J)
-
-    instances = [I, J, distances]
-
-    return instances
-
-
-def generateL(it):
-    """ Genera los puntos de bodegas y tiendas para las 5 instancias pequeñas """
-    I = []
-    J = []
-    distances = []
-    match it:
-        case 1:
-            
-            for _ in range(r.randint(72, 81)):
-                while True:
-                        
-                    point = generatePoint(r.choice([1, 2]))
-                    if point not in I:
-                        I.append(point)
-                        distances.append([])
-                        break
-                    continue
-            
-            for _ in range(r.randint(125, 145)):
-                while True:
-
-                    point = generatePoint(0)
-                    if point not in J:
-                        J.append(point)
-                        break
-                    continue
-            distances = createDistanceMatrix(I, J)
-        
-        case 2:
-            
-            for _ in range(r.randint(82, 91)):
-                while True:
-                        
-                    point = generatePoint(r.choice([1, 2]))
-                    if point not in I:
-                        I.append(point)
-                        distances.append([])
-                        break
-                    continue
-            
-            for _ in range(r.randint(145, 165)):
-                while True:
-
-                    point = generatePoint(0)
-                    if point not in J:
-                        J.append(point)
-                        break
-                    continue
-            distances = createDistanceMatrix(I, J)
-        
-        case 3:
-        
-            for _ in range(r.randint(92, 101)):
-                while True:
-                        
-                    point = generatePoint(r.choice([1, 2]))
-                    if point not in I:
-                        I.append(point)
-                        distances.append([])
-                        break
-                    continue
-            
-            for _ in range(r.randint(165, 185)):
-                while True:
-
-                    point = generatePoint(0)
-                    if point not in J:
-                        J.append(point)
-                        break
-                    continue
-            distances = createDistanceMatrix(I, J)
-
-        case 4:
-
-            for _ in range(r.randint(102, 111)):
-                while True:
-                        
-                    point = generatePoint(r.choice([1, 2]))
-                    if point not in I:
-                        I.append(point)
-                        distances.append([])
-                        break
-                    continue
-            
-            for _ in range(r.randint(185, 205)):
-                while True:
-
-                    point = generatePoint(0)
-                    if point not in J:
-                        J.append(point)
-                        break
-                    continue
-            distances = createDistanceMatrix(I, J)
-        
-        case 5:
-
-            for _ in range(r.randint(112, 131)):
-                while True:
-                        
-                    point = generatePoint(r.choice([1, 2]))
-                    if point not in I:
-                        I.append(point)
-                        distances.append([])
-                        break
-                    continue
-            
-            for _ in range(r.randint(205, 225)):
-                while True:
-
-                    point = generatePoint(0)
-                    if point not in J:
-                        J.append(point)
-                        break
-                    continue
-            distances = createDistanceMatrix(I, J)
-
-    instances = [I, J, distances]
-
-    return instances
-
-
 def distance(point1, point2):
     """ Calcula la distancia entre dos puntos """
     return round(((point2[0] - point1[0]) ** 2 + (point2[1] - point1[1]) ** 2) ** 0.5)
+
+
+def createDistanceMatrix(I, J):
+    distances = []
+    for i, itemI in enumerate(I):
+        distances.append([])
+        for _, itemJ in enumerate(J):
+            distances[i].append(distance(itemI, itemJ))
+    return distances
+
+
+def generate(it):
+
+    I = []
+    J = []
+    distances = []
+
+    for _ in range(r.randint(*RANGES[it - 1][0])):
+        while True:
+            # Si el punto no está en la lista I, se agrega, en caso contrario, se siguen generando puntos
+            point = generatePoint(r.choice([1, 2]))
+            if point not in I:
+                I.append(point)
+                distances.append([])
+                break
+            continue
+
+    for _ in range(r.randint(*RANGES[it - 1][0])):
+        while True:
+            # Si el punto no está en la lista J, se agrega, en caso contrario, se siguen generando puntos
+            point = generatePoint(0)
+            if point not in J:
+                J.append(point)
+                break
+            continue
+    distances = createDistanceMatrix(I, J)
+
+    instances = [I, J, distances]
+
+    return instances
 
 
 def main():
 
     for i in range(1, 6):
         # Se generan las 15 instancias a la vez
-        INSTANCES_S.append(generateS(i))
-        INSTANCES_M.append(generateM(i))
-        INSTANCES_L.append(generateL(i))
+        INSTANCES[0].append(generate(i))
+        INSTANCES[1].append(generate(5 + i))
+        INSTANCES[2].append(generate(10 + i))
     
     print("            1          |          2          |           3           |")
     print("   |      Pequeñas     |      Medianas       |        Grandes        |")
@@ -439,7 +107,7 @@ def main():
                 while (k < len(INSTANCES[size - 1][instNum - 1][0])):
 
                     capacity = r.randint(2, round(JQuant/3))
-                    print(f"\t({INSTANCES[size - 1][instNum - 1][0][k][0]}, {INSTANCES[size - 1][instNum - 1][0][k][1]}) | {ZONAS[INSTANCES[size - 1][instNum - 1][0][k][2] - 1]}")
+                    print(f"\t({INSTANCES[size - 1][instNum - 1][0][k][0]}, {INSTANCES[size - 1][instNum - 1][0][k][1]}) | {ZONES[INSTANCES[size - 1][instNum - 1][0][k][2]]}")
                     print(f"\tCosto de instalación: {r.randint(1000, 3000)} | Emisiones por operación: {r.randint(20, 70)} | Capacidad: {capacity}")
                     
                     t = 0
