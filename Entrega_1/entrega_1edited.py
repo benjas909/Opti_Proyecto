@@ -9,6 +9,10 @@ RANGES = [
     [(66, 72), (110, 125)], [(72, 81), (125, 145)], [(82, 91), (145, 165)],
     [(92, 101), (165, 185)], [(102, 111), (185, 205)], [(112, 131), (205, 225)]
     ]
+C = []
+G = []
+K = []
+D = []
 
 def generatePoint(zone):
     """ Genera una 3-tupla con las coordenadas x e y del punto, además de el número de zona"""
@@ -84,15 +88,50 @@ def generate(it):
 
     return instances
 
-
-def main():
-
+def generateAllInstances():
     for i in range(5):
         # Se generan las 15 instancias a la vez
         INSTANCES[0].append(generate(i))
         INSTANCES[1].append(generate(4 + i))
         INSTANCES[2].append(generate(9 + i))
-    
+    return
+
+
+def getResults(size, instNum):
+    JQuant = len(INSTANCES[size - 1][instNum - 1][1])
+    outputString = ""
+    k = 0
+    for i in range(len(INSTANCES[size - 1][instNum - 1][1])):
+        print(f"J{i + 1}: ({INSTANCES[size - 1][instNum - 1][1][i][0]}, {INSTANCES[size - 1][instNum - 1][1][i][1]})")
+    while (k < len(INSTANCES[size - 1][instNum - 1][0])):
+
+        capacity = r.randint(2, round(JQuant/3))
+        # outputString += (f"\n\t({INSTANCES[size - 1][instNum - 1][0][k][0]}, {INSTANCES[size - 1][instNum - 1][0][k][1]}) | {ZONES[INSTANCES[size - 1][instNum - 1][0][k][2]]}")
+        installCost = r.randint(1000, 3000)
+        opEmissions = r.randint(20, 70)
+        outputString += (f"\nG.{k + 1}.{'B' if (INSTANCES[size - 1][instNum - 1][0][k][2] == 1) else 'A'}: {installCost}\nC.{k + 1}.{'B' if (INSTANCES[size - 1][instNum - 1][0][k][2] == 1) else 'A'}: {opEmissions}\nK.{k + 1}.{'B' if (INSTANCES[size - 1][instNum - 1][0][k][2] == 1) else 'A'}: {capacity}")
+        G.append(('B' if (INSTANCES[size - 1][instNum - 1][0][k][2] == 1) else 'A', installCost))
+        C.append(('B' if (INSTANCES[size - 1][instNum - 1][0][k][2] == 1) else 'A', opEmissions))
+        K.append(('B' if (INSTANCES[size - 1][instNum - 1][0][k][2] == 1) else 'A', capacity))
+        print(('B' if (INSTANCES[size - 1][instNum - 1][0][k][2] == 1) else 'A', installCost))
+        print(('B' if (INSTANCES[size - 1][instNum - 1][0][k][2] == 1) else 'A', opEmissions))
+        print(('B' if (INSTANCES[size - 1][instNum - 1][0][k][2] == 1) else 'A', capacity))
+        
+        t = 0
+        Di = []
+        while (t < JQuant):
+            
+            dist = INSTANCES[size - 1][instNum - 1][2][k][t]
+            outputString += (f"\nD.{k + 1}.{t + 1}: {dist}")
+            Di.append(dist)
+            t += 1
+        D.append(Di)
+        k += 1
+        outputString += ("\n;")
+    return outputString
+
+def chooseInstanceSize():
+
     print("            1          |          2          |           3           |")
     print("   |      Pequeñas     |      Medianas       |        Grandes        |")
     print("   |    I    |    J    |    I    |     J     |     I     |     J     |")
@@ -108,26 +147,26 @@ def main():
         if size in [1, 2, 3]:
             instNum = int(input("Número de instancia (1 - 5): "))
             if instNum in range(1, 6):
+                return (size, instNum)
                 
-                JQuant = len(INSTANCES[size - 1][instNum - 1][1])
-                k = 0
-                while (k < len(INSTANCES[size - 1][instNum - 1][0])):
-
-                    capacity = r.randint(2, round(JQuant/3))
-                    print(f"\t({INSTANCES[size - 1][instNum - 1][0][k][0]}, {INSTANCES[size - 1][instNum - 1][0][k][1]}) | {ZONES[INSTANCES[size - 1][instNum - 1][0][k][2]]}")
-                    print(f"\tCosto de instalación: {r.randint(1000, 3000)} | Emisiones por operación: {r.randint(20, 70)} | Capacidad: {capacity}")
-                    
-                    t = 0
-                    while (t < JQuant):
-                        dist = INSTANCES[size - 1][instNum - 1][2][k][t]
-                        print(f"\t\tDistancia con respecto a tienda en ({INSTANCES[size - 1][instNum - 1][1][t][0]}, {INSTANCES[size - 1][instNum - 1][1][t][1]}): {dist} | Costo de transporte: {1.25 * dist} | Emisiones: {1.5 * dist}")
-                        t += 1
-
-                    k += 1
-                    print("")
-                break
         continue
 
+def main():
+    generateAllInstances()
+    size = chooseInstanceSize()
+    output = getResults(*size)
+    LPout = ""
+    lpc = "min: "
+    lpd = ""
+    for x in range(len(C)):
+        lpc += f"{C[x][1]} B{x + 1}{C[x][0]} + "
+        # print(len(D[x]))
+        for y in range(len(D[x])):
+            lpd += f"Y{x + 1}{y + 1} ({D[x][y]} * 1.5){';' if x == len(C) - 1 else ' + '}"
+    LPout += lpc + lpd
+
+    print(output)
+    print(LPout)
     return 0
 
 
