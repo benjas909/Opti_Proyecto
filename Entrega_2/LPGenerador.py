@@ -1,4 +1,6 @@
+import math
 import random as r
+import subprocess as sub
 
 ZONES = ["Verde Oscuro", "Verde Claro", "Azul"]
 RANGES = [
@@ -99,12 +101,10 @@ def getResults(instance):
  
     Returns:
         tuple: (Valor de J, String que describe el modelo).
-    """ 
+    """
     JQuant = len(instance[1])
     outputString = ""
     k = 0
-    for i, point in enumerate(instance[1]):
-        print(f"J{i + 1}: ({point[0]}, {point[1]})")
     while k < len(instance[0]):
 
         capacity = r.randint(2, round(JQuant/3))
@@ -114,7 +114,7 @@ def getResults(instance):
         G.append(('B' if (instance[0][k][2] == 1) else 'A', installCost))
         C.append(('B' if (instance[0][k][2] == 1) else 'A', opEmissions))
         K.append(('B' if (instance[0][k][2] == 1) else 'A', capacity))
-        
+
         t = 0
         Di = []
         while t < JQuant:
@@ -152,94 +152,112 @@ def chooseInstanceSize():
                         return 4 + (instNum - 1)
                     case 3:
                         return 9 + (instNum - 1)
-                
+
         continue
 
 
 def main():
-    size = chooseInstanceSize()
-    instance = generate(size)
-    results = getResults(instance)
-    LPout = aux2 = ""
-    aux1 = "min: "
-    for x, value in enumerate(C):
-        aux1 += f"{value[1]} B{x + 1}{value[0]} + "
-        for y, item in enumerate(D[x]):
-            aux2 += f"{item * 1.5} Y{x + 1}a{y + 1}{value[0]} + "
+    # select = int(input(''))
 
-    LPout += aux1 + aux2[:-3] + ";\n"
-    aux1 = aux2 = ""
-    
-    for k, item in enumerate(D):
-        if G[k][0] == 'A':
-            for m, _ in enumerate(item):
-                aux1 += f"Y{k + 1}a{m + 1}{G[k][0]} + "
-            aux1 = aux1[:-2] + f"<= {RANGES[size][0][1] * RANGES[size][1][1]} B{k + 1}{G[k][0]};\n"
+    for size in range(15):
+        instance = generate(size)
+        results = getResults(instance)
+        LPout = aux2 = ""
+        aux1 = "min: "
+        for x, value in enumerate(C):
+            aux1 += f"{value[1]} B{x + 1}{value[0]} + "
+            for y, item in enumerate(D[x]):
+                aux2 += f"{item * 1.5} Y{x + 1}a{y + 1}{value[0]} + "
 
-        elif G[k][0] == 'B':
-            for n, _ in enumerate(item):
-                aux1 += f"Y{k + 1}a{n + 1}{G[k][0]} + "
-            aux1 = aux1[:-2] + f"<= {RANGES[size][0][1] * RANGES[size][1][1]} B{k + 1}{G[k][0]};\n"
+        LPout += aux1 + aux2[:-3] + ";\n"
+        aux1 = aux2 = ""
 
-    LPout += aux1
-    aux1 = ""
+        for k, item in enumerate(D):
+            if G[k][0] == 'A':
+                for m, _ in enumerate(item):
+                    aux1 += f"Y{k + 1}a{m + 1}{G[k][0]} + "
+                aux1 = aux1[:-2] + f"<= {RANGES[size][0][1] * RANGES[size][1][1]} B{k + 1}{G[k][0]};\n"
 
-    for i, item in enumerate(G):
-        aux1 += f"{item[1]} B{i + 1}{item[0]} + "
+            elif G[k][0] == 'B':
+                for n, _ in enumerate(item):
+                    aux1 += f"Y{k + 1}a{n + 1}{G[k][0]} + "
+                aux1 = aux1[:-2] + f"<= {RANGES[size][0][1] * RANGES[size][1][1]} B{k + 1}{G[k][0]};\n"
 
-        for j, item in enumerate(D[i]):
-            aux2 += f"{item * 1.25} Y{i + 1}{j + 1}{C[i][0]} + "
-   
-    aux2 = aux2[:-3]
-   
-    LPout += aux1 + aux2 + f" <= {6000 * results[0]};\n"
+        LPout += aux1
+        aux1 = ""
 
-    aux1 = aux2 = ""
+        for i, item in enumerate(G):
+            aux1 += f"{item[1]} B{i + 1}{item[0]} + "
 
-    for j in range(results[0]):
-        for i, item in enumerate(C):
-            aux1 += f"Y{i + 1}a{j + 1}{item[0]} + "
-        aux1 = aux1[:-2] + "= 1;\n"
+            for j, item in enumerate(D[i]):
+                aux2 += f"{item * 1.25} Y{i + 1}a{j + 1}{C[i][0]} + "
 
-    LPout += aux1
+        aux2 = aux2[:-3]
 
-    aux1 = aux3 = ""
+        LPout += aux1 + aux2 + f" <= {6000 * results[0]};\n"
 
-    countA = countB = 0
-    for k, item in enumerate(G):
-        
-        if item[0] == 'A':
-            countA += 1
-            aux2 += f"B{k + 1}A + "
-            for m, value in enumerate(D[k]):
-                aux1 += f"Y{k + 1}a{m + 1}A + "
-            aux1 = aux1[:-2] + f"<= {K[k][1]};\n"
-        
-        elif item[0] == 'B':
-            countB += 1
-            aux3 += f"B{k + 1}B + "
-            for n, value in enumerate(D[k]):
-                aux1 += f"Y{k + 1}a{n + 1}B + "
-            aux1 = aux1[:-2] + f"<= {K[k][1]};\n"
+        aux1 = aux2 = ""
 
-    aux2 = aux2[:-2] + f">= {int(countA * 0.4)};\n"
-    aux3 = aux3[:-2] + f">= {int(countB * 0.4)};\n"
-    LPout += aux1 + f"{aux2 if countA > 0 else ''}" + f"{aux3 if countB > 0 else ''}"
-
-    aux1 = "bin "
-    aux2 = ""
-
-    for i, item in enumerate(C):
-        aux2 += f"B{i + 1}{item[0]}, "
         for j in range(results[0]):
-            aux1 += f"Y{i + 1}a{j + 1}{item[0]}, "
+            for i, item in enumerate(C):
+                aux1 += f"Y{i + 1}a{j + 1}{item[0]} + "
+            aux1 = aux1[:-2] + "= 1;\n"
 
-    LPout += aux1 + aux2[:-2] +  ";"
+        LPout += aux1
 
-    with open("LPModel.lp", "w", encoding="utf8") as file:
-        file.write(LPout)
+        aux1 = aux3 = ""
 
-    print(LPout)
+        countA = countB = 0
+        for k, item in enumerate(G):
+
+            if item[0] == 'A':
+                countA += 1
+                aux2 += f"B{k + 1}A + "
+                for m, value in enumerate(D[k]):
+                    aux1 += f"Y{k + 1}a{m + 1}A + "
+                aux1 = aux1[:-2] + f"<= {K[k][1]};\n"
+
+            elif item[0] == 'B':
+                countB += 1
+                aux3 += f"B{k + 1}B + "
+                for n, value in enumerate(D[k]):
+                    aux1 += f"Y{k + 1}a{n + 1}B + "
+                aux1 = aux1[:-2] + f"<= {K[k][1]};\n"
+
+        aux2 = aux2[:-2] + f">= {int(math.ceil(countA * 0.4))};\n"
+        aux3 = aux3[:-2] + f">= {int(math.ceil(countB * 0.4))};\n"
+        LPout += aux1 + f"{aux2 if countA > 0 else ''}" + f"{aux3 if countB > 0 else ''}"
+
+        aux1 = "bin "
+        aux2 = ""
+
+        for i, item in enumerate(C):
+            aux2 += f"B{i + 1}{item[0]}, "
+            for j in range(results[0]):
+                aux1 += f"Y{i + 1}a{j + 1}{item[0]}, "
+
+        LPout += aux1 + aux2[:-2] +  ";"
+
+        with open(f"LPModelInst{size + 1}.lp", "w", encoding="utf8") as file:
+            file.write(LPout)
+
+        print(f'Se ha generado el archivo .lp para la instancia {size + 1}.')
+
+        print(f'Resolviendo la instancia {size + 1}...')
+
+        try:
+            output = sub.check_output(['lp_solve.exe', '-time', '-Si', '-i', f'LPModelInst{size + 1}.lp'], text = True, timeout=30)
+            print(f'Se creó el archivo con la solución de la instancia {size + 1}.')
+
+        except sub.TimeoutExpired:
+            output = 'El problema no tiene solución o sobrepasó el tiempo de ejecución'
+            print(output)
+            # return 1
+
+        with open(f'solucion{size + 1}.txt', 'w', encoding='utf8') as solFile:
+            solFile.write(output)
+
+            
 
     return 0
 
