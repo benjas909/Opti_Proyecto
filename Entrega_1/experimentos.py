@@ -1,6 +1,5 @@
 import random as r
 
-INSTANCES = [[], [], []]
 ZONES = ["Verde Oscuro", "Verde Claro", "Azul"]
 RANGES = [
     [(5, 7), (6, 10)], [(8, 12), (10, 20)], [(13, 18), (20, 30)],
@@ -70,7 +69,6 @@ def generate(it):
             point = generatePoint(r.choice([1, 2]))
             if point not in I:
                 I.append(point)
-                distances.append([])
                 break
             continue
 
@@ -84,51 +82,51 @@ def generate(it):
             continue
     distances = createDistanceMatrix(I, J)
 
-    instances = [I, J, distances]
+    I = sorted(I, key=lambda x: x[2], reverse=True)
+    J = sorted(J, key=lambda x: x[2], reverse=True)
+    instance = [I, J, distances]
 
-    return instances
-
-def generateAllInstances():
-    for i in range(5):
-        # Se generan las 15 instancias a la vez
-        INSTANCES[0].append(generate(i))
-        INSTANCES[1].append(generate(4 + i))
-        INSTANCES[2].append(generate(9 + i))
-    return
+    return instance
 
 
-def getResults(size, instNum):
-    JQuant = len(INSTANCES[size - 1][instNum - 1][1])
+def getResults(instance):
+    """
+    Modela el problema con los datos generados, genera un string para mostrar en pantalla.
+ 
+    Args:
+        size (int): El tamaño de la instancia (1: Pequeña, 2: Mediana, 3: Grande).
+        insNum (int): Número de instancia dentro del tamaño (1 - 5).
+ 
+    Returns:
+        tuple: (Valor de J, String que describe el modelo).
+    """ 
+    JQuant = len(instance[1])
     outputString = ""
     k = 0
-    for i in range(len(INSTANCES[size - 1][instNum - 1][1])):
-        print(f"J{i + 1}: ({INSTANCES[size - 1][instNum - 1][1][i][0]}, {INSTANCES[size - 1][instNum - 1][1][i][1]})")
-    while (k < len(INSTANCES[size - 1][instNum - 1][0])):
+    for i, point in enumerate(instance[1]):
+        print(f"J{i + 1}: ({point[0]}, {point[1]})")
+    while k < len(instance[0]):
 
         capacity = r.randint(2, round(JQuant/3))
-        # outputString += (f"\n\t({INSTANCES[size - 1][instNum - 1][0][k][0]}, {INSTANCES[size - 1][instNum - 1][0][k][1]}) | {ZONES[INSTANCES[size - 1][instNum - 1][0][k][2]]}")
         installCost = r.randint(1000, 3000)
         opEmissions = r.randint(20, 70)
-        outputString += (f"\nG.{k + 1}.{'B' if (INSTANCES[size - 1][instNum - 1][0][k][2] == 1) else 'A'}: {installCost}\nC.{k + 1}.{'B' if (INSTANCES[size - 1][instNum - 1][0][k][2] == 1) else 'A'}: {opEmissions}\nK.{k + 1}.{'B' if (INSTANCES[size - 1][instNum - 1][0][k][2] == 1) else 'A'}: {capacity}")
-        G.append(('B' if (INSTANCES[size - 1][instNum - 1][0][k][2] == 1) else 'A', installCost))
-        C.append(('B' if (INSTANCES[size - 1][instNum - 1][0][k][2] == 1) else 'A', opEmissions))
-        K.append(('B' if (INSTANCES[size - 1][instNum - 1][0][k][2] == 1) else 'A', capacity))
-        print(('B' if (INSTANCES[size - 1][instNum - 1][0][k][2] == 1) else 'A', installCost))
-        print(('B' if (INSTANCES[size - 1][instNum - 1][0][k][2] == 1) else 'A', opEmissions))
-        print(('B' if (INSTANCES[size - 1][instNum - 1][0][k][2] == 1) else 'A', capacity))
+        outputString += (f"\nG.{k + 1}.{'B' if (instance[0][k][2] == 1) else 'A'}: {installCost}\nC.{k + 1}.{'B' if (instance[0][k][2] == 1) else 'A'}: {opEmissions}\nK.{k + 1}.{'B' if (instance[0][k][2] == 1) else 'A'}: {capacity}")
+        G.append(('B' if (instance[0][k][2] == 1) else 'A', installCost))
+        C.append(('B' if (instance[0][k][2] == 1) else 'A', opEmissions))
+        K.append(('B' if (instance[0][k][2] == 1) else 'A', capacity))
         
         t = 0
         Di = []
-        while (t < JQuant):
-            
-            dist = INSTANCES[size - 1][instNum - 1][2][k][t]
+        while t < JQuant:
+            dist = instance[2][k][t]
             outputString += (f"\nD.{k + 1}.{t + 1}: {dist}")
             Di.append(dist)
             t += 1
         D.append(Di)
         k += 1
         outputString += ("\n;")
-    return outputString
+    return (JQuant, outputString)
+
 
 def chooseInstanceSize():
 
@@ -147,26 +145,102 @@ def chooseInstanceSize():
         if size in [1, 2, 3]:
             instNum = int(input("Número de instancia (1 - 5): "))
             if instNum in range(1, 6):
-                return (size, instNum)
+                match size:
+                    case 1:
+                        return instNum - 1
+                    case 2:
+                        return 4 + (instNum - 1)
+                    case 3:
+                        return 9 + (instNum - 1)
                 
         continue
 
-def main():
-    generateAllInstances()
-    size = chooseInstanceSize()
-    output = getResults(*size)
-    LPout = ""
-    lpc = "min: "
-    lpd = ""
-    for x in range(len(C)):
-        lpc += f"{C[x][1]} B{x + 1}{C[x][0]} + "
-        # print(len(D[x]))
-        for y in range(len(D[x])):
-            lpd += f"Y{x + 1}{y + 1} ({D[x][y]} * 1.5){';' if x == len(C) - 1 else ' + '}"
-    LPout += lpc + lpd
 
-    print(output)
+def main():
+    size = chooseInstanceSize()
+    instance = generate(size)
+    results = getResults(instance)
+    LPout = aux2 = ""
+    aux1 = "min: "
+    for x, value in enumerate(C):
+        aux1 += f"{value[1]} B{x + 1}{value[0]} + "
+        for y, item in enumerate(D[x]):
+            aux2 += f"{item * 1.5} Y{x + 1}a{y + 1}{value[0]} + "
+
+    LPout += aux1 + aux2[:-3] + ";\n"
+    aux1 = aux2 = ""
+    
+    for k, item in enumerate(D):
+        if G[k][0] == 'A':
+            for m, _ in enumerate(item):
+                aux1 += f"Y{k + 1}a{m + 1}{G[k][0]} + "
+            aux1 = aux1[:-2] + f"<= {RANGES[size][0][1] * RANGES[size][1][1]} B{k + 1}{G[k][0]};\n"
+
+        elif G[k][0] == 'B':
+            for n, _ in enumerate(item):
+                aux1 += f"Y{k + 1}a{n + 1}{G[k][0]} + "
+            aux1 = aux1[:-2] + f"<= {RANGES[size][0][1] * RANGES[size][1][1]} B{k + 1}{G[k][0]};\n"
+
+    LPout += aux1
+    aux1 = ""
+
+    for i, item in enumerate(G):
+        aux1 += f"{item[1]} B{i + 1}{item[0]} + "
+
+        for j, item in enumerate(D[i]):
+            aux2 += f"{item * 1.25} Y{i + 1}{j + 1}{C[i][0]} + "
+   
+    aux2 = aux2[:-3]
+   
+    LPout += aux1 + aux2 + f" <= {6000 * results[0]};\n"
+
+    aux1 = aux2 = ""
+
+    for j in range(results[0]):
+        for i, item in enumerate(C):
+            aux1 += f"Y{i + 1}a{j + 1}{item[0]} + "
+        aux1 = aux1[:-2] + "= 1;\n"
+
+    LPout += aux1
+
+    aux1 = aux3 = ""
+
+    countA = countB = 0
+    for k, item in enumerate(G):
+        
+        if item[0] == 'A':
+            countA += 1
+            aux2 += f"B{k + 1}A + "
+            for m, value in enumerate(D[k]):
+                aux1 += f"Y{k + 1}a{m + 1}A + "
+            aux1 = aux1[:-2] + f"<= {K[k][1]};\n"
+        
+        elif item[0] == 'B':
+            countB += 1
+            aux3 += f"B{k + 1}B + "
+            for n, value in enumerate(D[k]):
+                aux1 += f"Y{k + 1}a{n + 1}B + "
+            aux1 = aux1[:-2] + f"<= {K[k][1]};\n"
+
+    aux2 = aux2[:-2] + f">= {int(countA * 0.4)};\n"
+    aux3 = aux3[:-2] + f">= {int(countB * 0.4)};\n"
+    LPout += aux1 + f"{aux2 if countA > 0 else ''}" + f"{aux3 if countB > 0 else ''}"
+
+    aux1 = "bin "
+    aux2 = ""
+
+    for i, item in enumerate(C):
+        aux2 += f"B{i + 1}{item[0]}, "
+        for j in range(results[0]):
+            aux1 += f"Y{i + 1}a{j + 1}{item[0]}, "
+
+    LPout += aux1 + aux2[:-2] +  ";"
+
+    with open("LPModel.lp", "w", encoding="utf8") as file:
+        file.write(LPout)
+
     print(LPout)
+
     return 0
 
 
